@@ -666,98 +666,62 @@ document.getElementById("pageSubtitle").textContent=pages[page][1];
 window.scrollTo(0,0);
 }
 
-function generateContent(){
+async function generateContent() {
 
-const topic=document.getElementById("topic").value.trim();
-const platform=document.getElementById("platform").value;
-const type=document.getElementById("contentType").value;
-const tone=document.getElementById("tone").value;
+  const topic = document.getElementById("topic").value.trim();
+  const platform = document.getElementById("platform").value;
+  const contentType = document.getElementById("contentType").value;
+  const tone = document.getElementById("tone").value;
 
-if(!topic){
-showToast("Pehle topic enter karo.");
-return;
+  if (!topic) {
+    showToast("Pehle topic enter karo.");
+    return;
+  }
+
+  const contentBox = document.getElementById("content");
+
+  contentBox.value = "Generating content... ⏳";
+
+  const GOOGLE_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbzm6qJykB1eZ-QMy2manDOFAWTv-DNW2oLTYbGKOdIFnqoYzgRdRp6lUFNQrhglP0Sy/exec";
+
+  const requestData = {
+    topic: topic,
+    platform: platform,
+    contentType: contentType,
+    tone: tone
+  };
+
+  try {
+
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(requestData)
+    });
+
+    if (!response.ok) {
+      throw new Error("Server error: " + response.status);
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || "Content generate nahi ho paya.");
+    }
+
+    contentBox.value = result.content;
+
+    showToast("Content generated ✨");
+
+  } catch (error) {
+
+    console.error("Generate Content Error:", error);
+
+    contentBox.value = "";
+
+    showToast("Error: " + error.message);
+  }
 }
-
-let hook="Here's something every creator should know:";
-let ending="Save this post and share it with another creator.";
-
-if(tone==="Funny") hook="Nobody talks about this 😂:";
-if(tone==="Professional") hook="A simple strategy every creator should understand:";
-if(tone==="Inspirational") hook="If you're building your creator journey, remember this:";
-if(tone==="Educational") hook="Let's break this down in a simple way:";
-
-const result=
-hook+"\n\n"+
-topic+"\n\n"+
-"Here are 3 practical points you can start using today:\n"+
-"1. Keep your message simple and clear.\n"+
-"2. Focus on solving one real audience problem.\n"+
-"3. Stay consistent and learn from your results.\n\n"+
-ending+"\n\n"+
-"#CreatorTips #ContentCreator #SocialMedia #ContentStrategy";
-
-document.getElementById("content").value=
-"Platform: "+platform+"\n"+
-"Format: "+type+"\n\n"+
-result;
-
-showToast("Content generated ✨");
-}
-
-function savePost(){
-
-const content=document.getElementById("content").value;
-
-if(!content){
-showToast("Pehle content generate karo.");
-return;
-}
-
-let posts=JSON.parse(localStorage.getItem("creatorPosts")||"[]");
-
-posts.push({
-content:content,
-date:new Date().toLocaleString()
-});
-
-localStorage.setItem("creatorPosts",JSON.stringify(posts));
-
-document.getElementById("postCount").textContent=posts.length;
-
-showToast("Draft saved successfully 💾");
-}
-
-function useIdea(idea){
-
-document.getElementById("topic").value=idea;
-
-const buttons=document.querySelectorAll(".nav button");
-showPage("create",buttons[1]);
-
-showToast("Idea added to composer 💡");
-}
-
-function connect(platform){
-
-showToast(platform+" connection will be added in the next version.");
-}
-
-function showToast(message){
-
-const toast=document.getElementById("toast");
-
-toast.textContent=message;
-toast.style.display="block";
-
-setTimeout(()=>{
-toast.style.display="none";
-},2500);
-}
-
-const savedPosts=JSON.parse(localStorage.getItem("creatorPosts")||"[]");
-document.getElementById("postCount").textContent=savedPosts.length;
-
-</script>
-
-</body>
-</html>
