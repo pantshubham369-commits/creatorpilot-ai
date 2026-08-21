@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CreatorPilot AI</title>
+<meta name="description" content="CreatorPilot AI — a free content planning and AI-assisted creation dashboard for social media creators.">
+<meta property="og:title" content="CreatorPilot AI">
+<meta property="og:description" content="Plan, create, and manage your content with AI assistance.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
 
 <style>
 *{
@@ -1284,12 +1289,205 @@ textarea{
 
     </section>
 
+
+    <!-- ================= PROFILE ================= -->
+
+    <section id="profile" class="page">
+
+      <div class="page-header">
+
+        <div>
+          <h1 class="page-title">
+            Creator Profile
+          </h1>
+
+          <p class="page-subtitle">
+            Manage how your creator profile appears across CreatorPilot AI.
+          </p>
+        </div>
+
+        <div class="creator-badge">
+          👤 Creator
+        </div>
+
+      </div>
+
+
+      <div class="card" id="phoneVerifyCard">
+
+        <h2 class="section-title">
+          Verify Your Phone Number
+        </h2>
+
+        <p class="page-subtitle" style="margin-bottom:18px;">
+          We'll send a one-time code to verify it's really you before you can edit your profile.
+        </p>
+
+        <div class="form-grid">
+
+          <div class="field">
+
+            <label for="profilePhone">
+              Phone Number (with country code)
+            </label>
+
+            <input
+              id="profilePhone"
+              type="tel"
+              placeholder="+91XXXXXXXXXX"
+              value="+91">
+
+          </div>
+
+          <div class="field" id="otpField" style="display:none;">
+
+            <label for="otpCode">
+              Enter OTP
+            </label>
+
+            <input
+              id="otpCode"
+              type="text"
+              inputmode="numeric"
+              placeholder="6-digit code">
+
+          </div>
+
+        </div>
+
+
+        <div class="actions">
+
+          <button
+            class="btn"
+            id="sendOtpBtn">
+            📲 Send OTP
+          </button>
+
+          <button
+            class="btn secondary"
+            id="verifyOtpBtn"
+            style="display:none;">
+            ✅ Verify OTP
+          </button>
+
+        </div>
+
+        <div id="recaptcha-container"></div>
+
+      </div>
+
+
+      <div class="card" id="profileDetailsCard" style="display:none;">
+
+        <h2 class="section-title">
+          Profile Details
+        </h2>
+
+        <div class="form-grid">
+
+          <div class="field">
+
+            <label for="profileName">
+              Display Name
+            </label>
+
+            <input
+              id="profileName"
+              type="text"
+              placeholder="e.g. Alex Rivera">
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="profileNiche">
+              Content Niche
+            </label>
+
+            <select id="profileNiche">
+
+              <option>Lifestyle</option>
+              <option>Business</option>
+              <option>Tech</option>
+              <option>Fitness</option>
+              <option>Education</option>
+              <option>Entertainment</option>
+
+            </select>
+
+          </div>
+
+
+          <div class="field full">
+
+            <label for="profileBio">
+              Bio
+            </label>
+
+            <textarea
+              id="profileBio"
+              placeholder="Tell your audience who you are..."></textarea>
+
+          </div>
+
+        </div>
+
+
+        <div class="actions">
+
+          <button
+            class="btn"
+            id="saveProfileBtn">
+            💾 Save Profile
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
   </main>
 
 </div>
 
 
 <div id="toast" class="toast"></div>
+
+
+<!-- =========================================================
+     FIREBASE (for Phone OTP verification on Creator Profile)
+     ========================================================= -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+<script>
+
+/*
+  ⚠️ PASTE YOUR OWN FIREBASE CONFIG HERE.
+  Get this from: Firebase Console → Project Settings →
+  "Your apps" → Web app.
+  This is safe to keep public — it is meant to be
+  embedded in client-side code.
+*/
+
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_API_KEY_HERE",
+  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+  projectId: "PASTE_YOUR_PROJECT_ID",
+  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_YOUR_SENDER_ID",
+  appId: "PASTE_YOUR_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+
+</script>
 
 
 <script>
@@ -1342,6 +1540,41 @@ document.getElementById("saveBtn");
 
 const postCount =
 document.getElementById("postCount");
+
+const profileNameInput =
+document.getElementById("profileName");
+
+const profileNicheInput =
+document.getElementById("profileNiche");
+
+const profileBioInput =
+document.getElementById("profileBio");
+
+const saveProfileBtn =
+document.getElementById("saveProfileBtn");
+
+const phoneVerifyCard =
+document.getElementById("phoneVerifyCard");
+
+const profileDetailsCard =
+document.getElementById("profileDetailsCard");
+
+const profilePhoneInput =
+document.getElementById("profilePhone");
+
+const otpField =
+document.getElementById("otpField");
+
+const otpCodeInput =
+document.getElementById("otpCode");
+
+const sendOtpBtn =
+document.getElementById("sendOtpBtn");
+
+const verifyOtpBtn =
+document.getElementById("verifyOtpBtn");
+
+let confirmationResult = null;
 
 
 /* =========================================================
@@ -1529,23 +1762,62 @@ async function generateContent(){
     /*
       Google Apps Script receives
       this JSON request.
+      A 20s timeout keeps the button
+      from hanging forever if the
+      script is slow or unreachable.
     */
 
-    const response =
-    await fetch(
-      GOOGLE_SCRIPT_URL,
-      {
-        method:"POST",
+    const controller = new AbortController();
 
-        headers:{
-          "Content-Type":
-          "text/plain;charset=utf-8"
-        },
+    const timeoutId = setTimeout(function(){
+      controller.abort();
+    },20000);
 
-        body:
-        JSON.stringify(requestData)
+    let response;
+
+    try{
+
+      response =
+      await fetch(
+        GOOGLE_SCRIPT_URL,
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+            "text/plain;charset=utf-8"
+          },
+
+          body:
+          JSON.stringify(requestData),
+
+          signal:
+          controller.signal
+        }
+      );
+
+    }
+    catch(fetchError){
+
+      if(fetchError.name === "AbortError"){
+
+        throw new Error(
+          "Request timed out after 20s. The Google Script may be slow, misconfigured, or unreachable."
+        );
+
       }
-    );
+
+      throw new Error(
+        "Network error reaching Google Script: " +
+        fetchError.message
+      );
+
+    }
+    finally{
+
+      clearTimeout(timeoutId);
+
+    }
 
 
     if(!response.ok){
@@ -1653,7 +1925,7 @@ async function generateContent(){
 
 
     showToast(
-      "Generation failed. Check Google Script."
+      "Generation failed: " + error.message
     );
 
   }
@@ -1798,6 +2070,254 @@ function updatePostCount(){
 
 
 /* =========================================================
+   CREATOR PROFILE
+   ========================================================= */
+
+function unlockProfileForm(){
+
+  phoneVerifyCard.style.display = "none";
+
+  profileDetailsCard.style.display = "block";
+
+}
+
+
+function loadProfile(){
+
+  let saved = null;
+
+  try{
+
+    saved =
+    JSON.parse(
+      localStorage.getItem(
+        "creatorProfile"
+      ) || "null"
+    );
+
+  }
+  catch(error){
+
+    saved = null;
+
+  }
+
+
+  if(saved && saved.verified){
+
+    profileNameInput.value = saved.name || "";
+
+    profileNicheInput.value = saved.niche || "Lifestyle";
+
+    profileBioInput.value = saved.bio || "";
+
+    profilePhoneInput.value = saved.phone || "+91";
+
+    unlockProfileForm();
+
+  }
+
+}
+
+
+function saveProfile(){
+
+  const profile = {
+
+    name:
+    profileNameInput.value.trim(),
+
+    niche:
+    profileNicheInput.value,
+
+    bio:
+    profileBioInput.value.trim(),
+
+    phone:
+    profilePhoneInput.value.trim(),
+
+    verified:
+    true
+
+  };
+
+  localStorage.setItem(
+    "creatorProfile",
+    JSON.stringify(profile)
+  );
+
+  showToast(
+    "Profile saved 👤"
+  );
+
+}
+
+
+saveProfileBtn.addEventListener(
+  "click",
+  saveProfile
+);
+
+
+/* =========================================================
+   PHONE OTP VERIFICATION (Firebase)
+   ========================================================= */
+
+function setupRecaptcha(){
+
+  if(window.recaptchaVerifier){
+
+    return;
+
+  }
+
+  window.recaptchaVerifier =
+  new firebase.auth.RecaptchaVerifier(
+    "recaptcha-container",
+    {
+      size:"invisible"
+    },
+    auth
+  );
+
+}
+
+
+sendOtpBtn.addEventListener(
+  "click",
+  async function(){
+
+    const phone =
+    profilePhoneInput.value.trim();
+
+    if(!phone || phone.length < 10){
+
+      showToast(
+        "Please enter a valid phone number with country code."
+      );
+
+      return;
+
+    }
+
+    sendOtpBtn.disabled = true;
+
+    sendOtpBtn.textContent =
+    "⏳ Sending...";
+
+    try{
+
+      setupRecaptcha();
+
+      confirmationResult =
+      await auth.signInWithPhoneNumber(
+        phone,
+        window.recaptchaVerifier
+      );
+
+      otpField.style.display = "flex";
+
+      verifyOtpBtn.style.display = "inline-block";
+
+      showToast(
+        "OTP sent to " + phone
+      );
+
+    }
+    catch(error){
+
+      console.error(
+        "OTP send error:",
+        error
+      );
+
+      showToast(
+        "Could not send OTP: " + error.message
+      );
+
+    }
+    finally{
+
+      sendOtpBtn.disabled = false;
+
+      sendOtpBtn.textContent =
+      "📲 Send OTP";
+
+    }
+
+  }
+);
+
+
+verifyOtpBtn.addEventListener(
+  "click",
+  async function(){
+
+    const code =
+    otpCodeInput.value.trim();
+
+    if(!code){
+
+      showToast(
+        "Please enter the OTP you received."
+      );
+
+      return;
+
+    }
+
+    if(!confirmationResult){
+
+      showToast(
+        "Please send an OTP first."
+      );
+
+      return;
+
+    }
+
+    verifyOtpBtn.disabled = true;
+
+    verifyOtpBtn.textContent =
+    "⏳ Verifying...";
+
+    try{
+
+      await confirmationResult.confirm(code);
+
+      showToast(
+        "Phone verified ✅"
+      );
+
+      unlockProfileForm();
+
+    }
+    catch(error){
+
+      console.error(
+        "OTP verify error:",
+        error
+      );
+
+      showToast(
+        "Invalid OTP. Please try again."
+      );
+
+    }
+    finally{
+
+      verifyOtpBtn.disabled = false;
+
+      verifyOtpBtn.textContent =
+      "✅ Verify OTP";
+
+    }
+
+  }
+);
+
+
+/* =========================================================
    SOCIAL CONNECT BUTTONS
    ========================================================= */
 
@@ -1824,6 +2344,8 @@ document
    ========================================================= */
 
 updatePostCount();
+
+loadProfile();
 
 showPage("dashboard");
 
