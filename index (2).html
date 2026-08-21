@@ -1,0 +1,2530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CreatorPilot AI</title>
+<meta name="description" content="CreatorPilot AI — a free content planning and AI-assisted creation dashboard for social media creators.">
+<meta property="og:title" content="CreatorPilot AI">
+<meta property="og:description" content="Plan, create, and manage your content with AI assistance.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#0f172a;
+  color:#f8fafc;
+  min-height:100vh;
+}
+
+button,
+input,
+textarea,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  width:240px;
+  background:#111827;
+  border-right:1px solid #263244;
+  padding:24px 16px;
+  position:fixed;
+  top:0;
+  bottom:0;
+  left:0;
+  z-index:20;
+}
+
+.logo{
+  font-size:24px;
+  font-weight:800;
+  margin-bottom:36px;
+  padding-left:12px;
+}
+
+.logo span{
+  color:#8b5cf6;
+}
+
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.nav-btn{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#aeb8ca;
+  text-align:left;
+  padding:14px 12px;
+  border-radius:10px;
+  font-size:16px;
+  transition:.2s;
+}
+
+.nav-btn:hover{
+  background:#1b2638;
+  color:#fff;
+}
+
+.nav-btn.active{
+  background:#202d43;
+  color:#fff;
+}
+
+.sidebar-footer{
+  position:absolute;
+  bottom:22px;
+  left:20px;
+  color:#7f8ba0;
+  font-size:12px;
+  line-height:1.5;
+}
+
+/* MAIN */
+
+.main{
+  margin-left:240px;
+  width:calc(100% - 240px);
+  min-height:100vh;
+  padding:32px;
+}
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.page-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:28px;
+}
+
+.page-title{
+  font-size:32px;
+  font-weight:800;
+  margin-bottom:5px;
+}
+
+.page-subtitle{
+  color:#94a3b8;
+  font-size:16px;
+}
+
+.creator-badge{
+  background:#202d43;
+  border-radius:30px;
+  padding:11px 18px;
+  color:#fff;
+}
+
+/* CARDS */
+
+.card{
+  background:#1e293b;
+  border:1px solid #2b3950;
+  border-radius:16px;
+  padding:22px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  margin-bottom:22px;
+}
+
+.stat-card{
+  background:#1e293b;
+  border:1px solid #2b3950;
+  border-radius:16px;
+  padding:22px;
+}
+
+.stat-icon{
+  font-size:22px;
+  margin-bottom:14px;
+}
+
+.stat-value{
+  font-size:30px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.stat-label{
+  color:#94a3b8;
+  font-size:14px;
+}
+
+/* DASHBOARD */
+
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:20px;
+}
+
+.section-title{
+  font-size:19px;
+  font-weight:700;
+  margin-bottom:18px;
+}
+
+.plan-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 0;
+  border-bottom:1px solid #334155;
+}
+
+.plan-item:last-child{
+  border-bottom:0;
+}
+
+.plan-title{
+  font-weight:700;
+  margin-bottom:5px;
+}
+
+.plan-meta{
+  color:#94a3b8;
+  font-size:13px;
+}
+
+.badge{
+  background:#42358f;
+  color:#ddd6fe;
+  border-radius:20px;
+  padding:6px 12px;
+  font-size:12px;
+}
+
+.quick-actions{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.btn{
+  border:0;
+  border-radius:10px;
+  padding:13px 18px;
+  background:#8b5cf6;
+  color:white;
+  font-weight:700;
+  transition:.2s;
+}
+
+.btn:hover{
+  background:#7c3aed;
+}
+
+.btn.secondary{
+  background:#334155;
+}
+
+.btn.secondary:hover{
+  background:#475569;
+}
+
+.btn.full{
+  width:100%;
+}
+
+/* FORM */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.field.full{
+  grid-column:1 / -1;
+}
+
+.field label{
+  color:#cbd5e1;
+  font-size:14px;
+  font-weight:600;
+}
+
+input,
+textarea,
+select{
+  width:100%;
+  background:#0f172a;
+  border:1px solid #3a4961;
+  border-radius:9px;
+  color:#f8fafc;
+  padding:13px;
+  outline:none;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+  border-color:#8b5cf6;
+}
+
+textarea{
+  min-height:220px;
+  resize:vertical;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:18px;
+}
+
+/* CALENDAR */
+
+.calendar{
+  display:grid;
+  gap:10px;
+}
+
+.calendar-day{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px;
+  background:#111827;
+  border:1px solid #2b3950;
+  border-radius:12px;
+}
+
+.calendar-left{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.calendar-day strong{
+  width:50px;
+  color:#c4b5fd;
+}
+
+.calendar-title{
+  color:#fff;
+}
+
+.calendar-type{
+  color:#94a3b8;
+  font-size:13px;
+}
+
+/* IDEAS */
+
+.idea-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.idea-card{
+  background:#1e293b;
+  border:1px solid #2b3950;
+  border-radius:14px;
+  padding:20px;
+}
+
+.idea-card h3{
+  margin-bottom:10px;
+}
+
+.idea-card p{
+  color:#94a3b8;
+  line-height:1.5;
+  margin-bottom:15px;
+}
+
+/* ANALYTICS */
+
+.analytics-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.metric{
+  padding:20px;
+  background:#111827;
+  border:1px solid #2b3950;
+  border-radius:12px;
+}
+
+.metric-value{
+  font-size:28px;
+  font-weight:800;
+  margin-top:8px;
+}
+
+.progress{
+  width:100%;
+  height:8px;
+  background:#334155;
+  border-radius:20px;
+  margin-top:14px;
+  overflow:hidden;
+}
+
+.progress span{
+  display:block;
+  height:100%;
+  width:68%;
+  background:#8b5cf6;
+}
+
+/* SOCIAL */
+
+.social-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.social-card{
+  background:#1e293b;
+  border:1px solid #2b3950;
+  border-radius:14px;
+  padding:22px;
+}
+
+.social-card h3{
+  margin-bottom:8px;
+}
+
+.social-card p{
+  color:#94a3b8;
+  margin-bottom:16px;
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+  right:25px;
+  bottom:25px;
+  background:#1e293b;
+  border:1px solid #475569;
+  color:white;
+  padding:14px 18px;
+  border-radius:10px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  display:none;
+  z-index:100;
+}
+
+.toast.show{
+  display:block;
+}
+
+/* LOADING */
+
+.loading{
+  opacity:.7;
+  pointer-events:none;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+  .sidebar{
+    width:210px;
+  }
+
+  .main{
+    margin-left:210px;
+    width:calc(100% - 210px);
+    padding:22px;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .dashboard-grid{
+    grid-template-columns:1fr;
+  }
+
+  .idea-grid,
+  .social-grid{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:650px){
+
+  .sidebar{
+    width:100%;
+    height:auto;
+    position:relative;
+    padding:15px;
+  }
+
+  .logo{
+    margin-bottom:15px;
+  }
+
+  .nav{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .sidebar-footer{
+    display:none;
+  }
+
+  .main{
+    margin-left:0;
+    width:100%;
+    padding:18px;
+  }
+
+  .stats,
+  .form-grid,
+  .analytics-grid,
+  .idea-grid,
+  .social-grid{
+    grid-template-columns:1fr;
+  }
+
+  .field.full{
+    grid-column:auto;
+  }
+
+  .page-title{
+    font-size:26px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      Creator<span>Pilot AI</span>
+    </div>
+
+    <nav class="nav">
+
+      <button class="nav-btn active" data-page="dashboard">
+        🏠 Dashboard
+      </button>
+
+      <button class="nav-btn" data-page="create">
+        ✍️ Create Post
+      </button>
+
+      <button class="nav-btn" data-page="calendar">
+        📅 Content Calendar
+      </button>
+
+      <button class="nav-btn" data-page="ideas">
+        💡 AI Ideas
+      </button>
+
+      <button class="nav-btn" data-page="analytics">
+        📊 Analytics
+      </button>
+
+      <button class="nav-btn" data-page="social">
+        📱 Social Accounts
+      </button>
+<button class="nav-btn" data-page="profile">
+  👤 Creator Profile
+</button>
+    </nav>
+
+    <div class="sidebar-footer">
+      CreatorPilot AI<br>
+      Free MVP • v2.0
+    </div>
+
+  </aside>
+
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ================= DASHBOARD ================= -->
+
+    <section id="dashboard" class="page active">
+
+      <div class="page-header">
+
+        <div>
+          <h1 class="page-title">Creator Dashboard</h1>
+          <p class="page-subtitle">
+            Your daily content command center.
+          </p>
+        </div>
+
+        <div class="creator-badge">
+          👤 Creator
+        </div>
+
+      </div>
+
+
+      <div class="stats">
+
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value">12.4K</div>
+          <div class="stat-label">Total Followers</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">👀</div>
+          <div class="stat-value">48.2K</div>
+          <div class="stat-label">Monthly Reach</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">❤️</div>
+          <div class="stat-value">8.7%</div>
+          <div class="stat-label">Engagement Rate</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📝</div>
+          <div class="stat-value" id="postCount">
+            0
+          </div>
+          <div class="stat-label">Posts Created</div>
+        </div>
+
+      </div>
+
+
+      <div class="dashboard-grid">
+
+        <div class="card">
+
+          <h2 class="section-title">
+            Today's Content Plan
+          </h2>
+
+          <div class="plan-item">
+
+            <div>
+              <div class="plan-title">
+                5 mistakes beginners make
+              </div>
+
+              <div class="plan-meta">
+                Instagram Reel • Today • 7:00 PM
+              </div>
+            </div>
+
+            <span class="badge">Scheduled</span>
+
+          </div>
+
+
+          <div class="plan-item">
+
+            <div>
+              <div class="plan-title">
+                My creator journey
+              </div>
+
+              <div class="plan-meta">
+                LinkedIn • Today • 10:00 AM
+              </div>
+            </div>
+
+            <span class="badge">Draft</span>
+
+          </div>
+
+
+          <div class="plan-item">
+
+            <div>
+              <div class="plan-title">
+                3 tools every creator needs
+              </div>
+
+              <div class="plan-meta">
+                Instagram • Tomorrow
+              </div>
+            </div>
+
+            <span class="badge">Idea</span>
+
+          </div>
+
+        </div>
+
+
+        <div class="card">
+
+          <h2 class="section-title">
+            Quick Actions
+          </h2>
+
+          <div class="quick-actions">
+
+            <button
+              class="btn"
+              id="quickCreate">
+              + Create Post
+            </button>
+
+            <button
+              class="btn secondary"
+              id="quickIdeas">
+              💡 Get Ideas
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= CREATE POST ================= -->
+
+    <section id="create" class="page">
+
+      <div class="page-header">
+
+        <div>
+          <h1 class="page-title">Create Content</h1>
+
+          <p class="page-subtitle">
+            Generate and manage your next post.
+          </p>
+        </div>
+
+        <div class="creator-badge">
+          👤 Creator
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2 class="section-title">
+          Create New Post
+        </h2>
+
+
+        <div class="form-grid">
+
+          <div class="field">
+
+            <label for="platform">
+              Platform
+            </label>
+
+            <select id="platform">
+
+              <option>Instagram</option>
+              <option>Facebook</option>
+              <option>LinkedIn</option>
+              <option>YouTube</option>
+              <option>X</option>
+
+            </select>
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="contentType">
+              Content Type
+            </label>
+
+            <select id="contentType">
+
+              <option>Reel</option>
+              <option>Post</option>
+              <option>Carousel</option>
+              <option>Story</option>
+              <option>Article</option>
+              <option>Tweet</option>
+
+            </select>
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="topic">
+              Topic
+            </label>
+
+            <input
+              id="topic"
+              type="text"
+              placeholder="e.g. 5 tips for growing on Instagram"
+              value="5 tips for growing on Instagram">
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="tone">
+              Tone
+            </label>
+
+            <select id="tone">
+
+              <option>Professional</option>
+              <option>Funny</option>
+              <option>Inspirational</option>
+              <option>Educational</option>
+              <option>Friendly</option>
+              <option>Funky</option>
+
+            </select>
+
+          </div>
+
+
+          <div class="field full">
+
+            <label for="content">
+              Generated Content
+            </label>
+
+            <textarea
+              id="content"
+              placeholder="Your AI-generated content will appear here..."></textarea>
+
+          </div>
+
+        </div>
+
+
+        <div class="actions">
+
+          <button
+            class="btn"
+            id="generateBtn">
+            ✨ Generate Content
+          </button>
+
+          <button
+            class="btn secondary"
+            id="saveBtn">
+            💾 Save Draft
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= CALENDAR ================= -->
+
+    <section id="calendar" class="page">
+
+      <div class="page-header">
+
+        <div>
+          <h1 class="page-title">
+            Content Calendar
+          </h1>
+
+          <p class="page-subtitle">
+            Plan your content for the week.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2 class="section-title">
+          7-Day Content Calendar
+        </h2>
+
+
+        <div class="calendar">
+
+          <div class="calendar-day">
+            <div class="calendar-left">
+              <strong>MON</strong>
+              <span class="calendar-title">
+                🎥 Educational Reel
+              </span>
+              <span class="calendar-type">
+                Instagram
+              </span>
+            </div>
+            <span class="badge">Planned</span>
+          </div>
+
+
+          <div class="calendar-day">
+            <div class="calendar-left">
+              <strong>TUE</strong>
+              <span class="calendar-title">
+                📸 Creator Story
+              </span>
+              <span class="calendar-type">
+                Instagram
+              </span>
+            </div>
+            <span class="badge">Draft</span>
+          </div>
+
+
+          <div class="calendar-day">
+            <div class="calendar-left">
+              <strong>WED</strong>
+              <span class="calendar-title">
+                🎯 Tips Carousel
+              </span>
+              <span class="calendar-type">
+                Instagram
+              </span>
+            </div>
+            <span class="badge">Idea</span>
+          </div>
+
+
+          <div class="calendar-day">
+            <div class="calendar-left">
+              <strong>THU</strong>
+              <span class="calendar-title">
+                💡 Industry Tips
+              </span>
+              <span class="calendar-type">
+                LinkedIn
+              </span>
+            </div>
+            <span class="badge">Idea</span>
+          </div>
+
+
+          <div class="calendar-day">
+            <div class="calendar-left">
+              <strong>FRI</strong>
+              <span class="calendar-title">
+                🎬 Behind The Scenes
+              </span>
+              <span class="calendar-type">
+                Instagram Reel
+              </span>
+            </div>
+            <span class="badge">Planned</span>
+          </div>
+
+
+          <div class="calendar-day">
+            <div class="calendar-left">
+              <strong>SAT</strong>
+              <span class="calendar-title">
+                🔥 Trending Topic
+              </span>
+              <span class="calendar-type">
+                Instagram
+              </span>
+            </div>
+            <span class="badge">Idea</span>
+          </div>
+
+
+          <div class="calendar-day">
+            <div class="calendar-left">
+              <strong>SUN</strong>
+              <span class="calendar-title">
+                ❤️ Weekly Reflection
+              </span>
+              <span class="calendar-type">
+                LinkedIn
+              </span>
+            </div>
+            <span class="badge">Planned</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= IDEAS ================= -->
+
+    <section id="ideas" class="page">
+
+      <div class="page-header">
+
+        <div>
+          <h1 class="page-title">
+            AI Content Ideas
+          </h1>
+
+          <p class="page-subtitle">
+            Fresh ideas to keep your content moving.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="idea-grid">
+
+        <div class="idea-card">
+
+          <h3>🚀 Growth Tips</h3>
+
+          <p>
+            5 mistakes new creators make when trying
+            to grow on Instagram.
+          </p>
+
+          <button
+            class="btn useIdea"
+            data-idea="5 mistakes new creators make on Instagram">
+            Use Idea
+          </button>
+
+        </div>
+
+
+        <div class="idea-card">
+
+          <h3>💰 Monetization</h3>
+
+          <p>
+            7 ways small creators can start making
+            money from their audience.
+          </p>
+
+          <button
+            class="btn useIdea"
+            data-idea="7 ways small creators can make money">
+            Use Idea
+          </button>
+
+        </div>
+
+
+        <div class="idea-card">
+
+          <h3>🎯 Content Strategy</h3>
+
+          <p>
+            How to create a simple weekly content
+            strategy that actually works.
+          </p>
+
+          <button
+            class="btn useIdea"
+            data-idea="How to create a simple weekly content strategy">
+            Use Idea
+          </button>
+
+        </div>
+
+
+        <div class="idea-card">
+
+          <h3>📱 Reels</h3>
+
+          <p>
+            Reel ideas that can help creators get
+            more reach without expensive equipment.
+          </p>
+
+          <button
+            class="btn useIdea"
+            data-idea="Reel ideas for getting more reach">
+            Use Idea
+          </button>
+
+        </div>
+
+
+        <div class="idea-card">
+
+          <h3>🧠 Education</h3>
+
+          <p>
+            Explain one useful concept in a simple
+            way your audience can understand.
+          </p>
+
+          <button
+            class="btn useIdea"
+            data-idea="Explain a useful creator concept simply">
+            Use Idea
+          </button>
+
+        </div>
+
+
+        <div class="idea-card">
+
+          <h3>❤️ Personal Brand</h3>
+
+          <p>
+            Share your creator journey and the lessons
+            you learned along the way.
+          </p>
+
+          <button
+            class="btn useIdea"
+            data-idea="My creator journey and lessons learned">
+            Use Idea
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= ANALYTICS ================= -->
+
+    <section id="analytics" class="page">
+
+      <div class="page-header">
+
+        <div>
+          <h1 class="page-title">
+            Analytics
+          </h1>
+
+          <p class="page-subtitle">
+            Track your creator performance.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="analytics-grid">
+
+        <div class="metric">
+
+          <div>Followers</div>
+
+          <div class="metric-value">
+            12.4K
+          </div>
+
+          <div class="progress">
+            <span style="width:72%"></span>
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div>Monthly Reach</div>
+
+          <div class="metric-value">
+            48.2K
+          </div>
+
+          <div class="progress">
+            <span style="width:81%"></span>
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div>Engagement</div>
+
+          <div class="metric-value">
+            8.7%
+          </div>
+
+          <div class="progress">
+            <span style="width:64%"></span>
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div>Content Consistency</div>
+
+          <div class="metric-value">
+            76%
+          </div>
+
+          <div class="progress">
+            <span style="width:76%"></span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= SOCIAL ================= -->
+
+    <section id="social" class="page">
+
+      <div class="page-header">
+
+        <div>
+          <h1 class="page-title">
+            Social Accounts
+          </h1>
+
+          <p class="page-subtitle">
+            Manage your creator platforms.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="social-grid">
+
+        <div class="social-card">
+
+          <h3>📸 Instagram</h3>
+
+          <p>
+            Connect your Instagram account.
+          </p>
+
+          <button class="btn connectBtn">
+            Connect
+          </button>
+
+        </div>
+
+
+        <div class="social-card">
+
+          <h3>💼 LinkedIn</h3>
+
+          <p>
+            Connect your LinkedIn account.
+          </p>
+
+          <button class="btn connectBtn">
+            Connect
+          </button>
+
+        </div>
+
+
+        <div class="social-card">
+
+          <h3>▶️ YouTube</h3>
+
+          <p>
+            Connect your YouTube account.
+          </p>
+
+          <button class="btn connectBtn">
+            Connect
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= PROFILE ================= -->
+
+    <section id="profile" class="page">
+
+      <div class="page-header">
+
+        <div>
+          <h1 class="page-title">
+            Creator Profile
+          </h1>
+
+          <p class="page-subtitle">
+            Manage how your creator profile appears across CreatorPilot AI.
+          </p>
+        </div>
+
+        <div class="creator-badge">
+          👤 Creator
+        </div>
+
+      </div>
+
+
+      <div class="card" id="phoneVerifyCard">
+
+        <h2 class="section-title">
+          Verify Your Phone Number
+        </h2>
+
+        <p class="page-subtitle" style="margin-bottom:18px;">
+          We'll send a one-time code to verify it's really you before you can edit your profile.
+        </p>
+
+        <div class="form-grid">
+
+          <div class="field">
+
+            <label for="profilePhone">
+              Phone Number (with country code)
+            </label>
+
+            <input
+              id="profilePhone"
+              type="tel"
+              placeholder="+91XXXXXXXXXX"
+              value="+91">
+
+          </div>
+
+          <div class="field" id="otpField" style="display:none;">
+
+            <label for="otpCode">
+              Enter OTP
+            </label>
+
+            <input
+              id="otpCode"
+              type="text"
+              inputmode="numeric"
+              placeholder="6-digit code">
+
+          </div>
+
+        </div>
+
+
+        <div class="actions">
+
+          <button
+            class="btn"
+            id="sendOtpBtn">
+            📲 Send OTP
+          </button>
+
+          <button
+            class="btn secondary"
+            id="verifyOtpBtn"
+            style="display:none;">
+            ✅ Verify OTP
+          </button>
+
+        </div>
+
+        <div id="recaptcha-container"></div>
+
+      </div>
+
+
+      <div class="card" id="profileDetailsCard" style="display:none;">
+
+        <h2 class="section-title">
+          Profile Details
+        </h2>
+
+        <div class="form-grid">
+
+          <div class="field">
+
+            <label for="profileName">
+              Display Name
+            </label>
+
+            <input
+              id="profileName"
+              type="text"
+              placeholder="e.g. Alex Rivera">
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="profileNiche">
+              Content Niche
+            </label>
+
+            <select id="profileNiche">
+
+              <option>Lifestyle</option>
+              <option>Business</option>
+              <option>Tech</option>
+              <option>Fitness</option>
+              <option>Education</option>
+              <option>Entertainment</option>
+
+            </select>
+
+          </div>
+
+
+          <div class="field full">
+
+            <label for="profileBio">
+              Bio
+            </label>
+
+            <textarea
+              id="profileBio"
+              placeholder="Tell your audience who you are..."></textarea>
+
+          </div>
+
+        </div>
+
+
+        <div class="actions">
+
+          <button
+            class="btn"
+            id="saveProfileBtn">
+            💾 Save Profile
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
+<!-- =========================================================
+     FIREBASE (for Phone OTP verification on Creator Profile)
+     ========================================================= -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+<script>
+
+/*
+  ⚠️ PASTE YOUR OWN FIREBASE CONFIG HERE.
+  Get this from: Firebase Console → Project Settings →
+  "Your apps" → Web app.
+  This is safe to keep public — it is meant to be
+  embedded in client-side code.
+*/
+
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_API_KEY_HERE",
+  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+  projectId: "PASTE_YOUR_PROJECT_ID",
+  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_YOUR_SENDER_ID",
+  appId: "PASTE_YOUR_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+
+</script>
+
+
+<script>
+
+/* =========================================================
+   CREATORPILOT AI
+   FRONTEND JAVASCRIPT
+   ========================================================= */
+
+
+/* GOOGLE APPS SCRIPT WEB APP URL */
+
+const GOOGLE_SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbxXjNlUxh6bKRghlolppjfAb2x-_qd3wgj8pFRlYVR_aw6OkrgdSE09blnv_KcB-89n/exec";
+
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const pages =
+document.querySelectorAll(".page");
+
+const navButtons =
+document.querySelectorAll(".nav-btn");
+
+const toast =
+document.getElementById("toast");
+
+const topicInput =
+document.getElementById("topic");
+
+const platformInput =
+document.getElementById("platform");
+
+const contentTypeInput =
+document.getElementById("contentType");
+
+const toneInput =
+document.getElementById("tone");
+
+const contentBox =
+document.getElementById("content");
+
+const generateBtn =
+document.getElementById("generateBtn");
+
+const saveBtn =
+document.getElementById("saveBtn");
+
+const postCount =
+document.getElementById("postCount");
+
+const profileNameInput =
+document.getElementById("profileName");
+
+const profileNicheInput =
+document.getElementById("profileNiche");
+
+const profileBioInput =
+document.getElementById("profileBio");
+
+const saveProfileBtn =
+document.getElementById("saveProfileBtn");
+
+const phoneVerifyCard =
+document.getElementById("phoneVerifyCard");
+
+const profileDetailsCard =
+document.getElementById("profileDetailsCard");
+
+const profilePhoneInput =
+document.getElementById("profilePhone");
+
+const otpField =
+document.getElementById("otpField");
+
+const otpCodeInput =
+document.getElementById("otpCode");
+
+const sendOtpBtn =
+document.getElementById("sendOtpBtn");
+
+const verifyOtpBtn =
+document.getElementById("verifyOtpBtn");
+
+let confirmationResult = null;
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+function showToast(message){
+
+  toast.textContent = message;
+
+  toast.classList.add("show");
+
+  setTimeout(function(){
+
+    toast.classList.remove("show");
+
+  },3000);
+}
+
+
+/* =========================================================
+   PAGE NAVIGATION
+   IMPORTANT:
+   No inline onclick is used.
+   ========================================================= */
+
+function showPage(pageName){
+
+  pages.forEach(function(page){
+
+    page.classList.remove("active");
+
+  });
+
+
+  const selectedPage =
+  document.getElementById(pageName);
+
+  if(selectedPage){
+
+    selectedPage.classList.add("active");
+
+  }
+
+
+  navButtons.forEach(function(button){
+
+    button.classList.remove("active");
+
+    if(button.dataset.page === pageName){
+
+      button.classList.add("active");
+
+    }
+
+  });
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =========================================================
+   SIDEBAR BUTTONS
+   ========================================================= */
+
+navButtons.forEach(function(button){
+
+  button.addEventListener("click",function(){
+
+    const page =
+    button.dataset.page;
+
+    showPage(page);
+
+  });
+
+});
+
+
+/* =========================================================
+   QUICK ACTIONS
+   ========================================================= */
+
+document
+.getElementById("quickCreate")
+.addEventListener("click",function(){
+
+  showPage("create");
+
+});
+
+
+document
+.getElementById("quickIdeas")
+.addEventListener("click",function(){
+
+  showPage("ideas");
+
+});
+
+
+/* =========================================================
+   USE IDEA BUTTONS
+   ========================================================= */
+
+document
+.querySelectorAll(".useIdea")
+.forEach(function(button){
+
+  button.addEventListener("click",function(){
+
+    const idea =
+    button.dataset.idea;
+
+    topicInput.value = idea;
+
+    showPage("create");
+
+    showToast("Idea added to composer 💡");
+
+  });
+
+});
+
+
+/* =========================================================
+   GENERATE CONTENT
+   ========================================================= */
+
+async function callGoogleScript(requestData,timeoutMs){
+
+  /*
+    Single attempt at calling the
+    Google Apps Script backend.
+    Throws a descriptive Error on
+    any failure so the caller can
+    decide whether to retry.
+  */
+
+  const controller = new AbortController();
+
+  const timeoutId = setTimeout(function(){
+    controller.abort();
+  },timeoutMs);
+
+  let response;
+
+  try{
+
+    response =
+    await fetch(
+      GOOGLE_SCRIPT_URL,
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":
+          "text/plain;charset=utf-8"
+        },
+
+        body:
+        JSON.stringify(requestData),
+
+        signal:
+        controller.signal
+      }
+    );
+
+  }
+  catch(fetchError){
+
+    if(fetchError.name === "AbortError"){
+
+      throw new Error(
+        "Request timed out after " +
+        (timeoutMs / 1000) +
+        "s. The Google Script may be slow, misconfigured, or unreachable."
+      );
+
+    }
+
+    throw new Error(
+      "Network error reaching Google Script: " +
+      fetchError.message
+    );
+
+  }
+  finally{
+
+    clearTimeout(timeoutId);
+
+  }
+
+
+  if(!response.ok){
+
+    throw new Error(
+      "Server returned HTTP " +
+      response.status
+    );
+
+  }
+
+
+  const rawText =
+  await response.text();
+
+
+  let data;
+
+
+  try{
+
+    data =
+    JSON.parse(rawText);
+
+  }catch(parseError){
+
+    /*
+      In case Apps Script returns
+      plain text instead of JSON.
+    */
+
+    data = {
+      content:rawText
+    };
+
+  }
+
+
+  /*
+    Support several possible response
+    structures from Apps Script.
+  */
+
+  let generated = "";
+
+
+  if(typeof data === "string"){
+
+    generated = data;
+
+  }
+  else if(data.content){
+
+    generated = data.content;
+
+  }
+  else if(data.result){
+
+    generated = data.result;
+
+  }
+  else if(data.text){
+
+    generated = data.text;
+
+  }
+  else if(data.output){
+
+    generated = data.output;
+
+  }
+
+
+  if(!generated){
+
+    throw new Error(
+      "No generated content received."
+    );
+
+  }
+
+
+  return generated;
+
+}
+
+
+function wait(ms){
+
+  return new Promise(function(resolve){
+
+    setTimeout(resolve,ms);
+
+  });
+
+}
+
+
+async function generateContent(){
+
+  const topic =
+  topicInput.value.trim();
+
+  const platform =
+  platformInput.value;
+
+  const contentType =
+  contentTypeInput.value;
+
+  const tone =
+  toneInput.value;
+
+
+  if(!topic){
+
+    showToast("Please enter a topic first.");
+
+    topicInput.focus();
+
+    return;
+
+  }
+
+
+  generateBtn.disabled = true;
+
+  generateBtn.textContent =
+  "⏳ Generating...";
+
+  contentBox.value =
+  "Generating content... ⏳";
+
+
+  const requestData = {
+
+    topic:topic,
+
+    platform:platform,
+
+    contentType:contentType,
+
+    tone:tone
+
+  };
+
+
+  /*
+    Google Apps Script often has a slow
+    "cold start" on the very first
+    request after being idle. If the
+    first attempt fails for any reason,
+    we automatically retry once before
+    bothering the user with an error.
+  */
+
+  const MAX_ATTEMPTS = 2;
+
+  let lastError = null;
+
+  let generated = null;
+
+
+  for(let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++){
+
+    try{
+
+      if(attempt > 1){
+
+        contentBox.value =
+        "First attempt failed, retrying... ⏳";
+
+        await wait(1500);
+
+      }
+
+      generated =
+      await callGoogleScript(
+        requestData,
+        20000
+      );
+
+      lastError = null;
+
+      break;
+
+    }
+    catch(error){
+
+      lastError = error;
+
+      console.error(
+        "Generate attempt " + attempt + " failed:",
+        error
+      );
+
+    }
+
+  }
+
+
+  if(lastError){
+
+    contentBox.value =
+    "";
+
+    showToast(
+      "Generation failed after 2 attempts: " + lastError.message
+    );
+
+  }
+  else{
+
+    contentBox.value =
+    "Platform: " + platform +
+    "\nFormat: " + contentType +
+    "\n\n" +
+    generated;
+
+
+    showToast(
+      "Content generated successfully ✨"
+    );
+
+  }
+
+
+  generateBtn.disabled = false;
+
+  generateBtn.textContent =
+  "✨ Generate Content";
+
+
+}
+
+
+/* =========================================================
+   GENERATE BUTTON
+   ========================================================= */
+
+generateBtn.addEventListener(
+  "click",
+  generateContent
+);
+
+
+/* =========================================================
+   SAVE DRAFT
+   ========================================================= */
+
+function savePost(){
+
+  const content =
+  contentBox.value.trim();
+
+
+  if(!content){
+
+    showToast(
+      "Please generate content first."
+    );
+
+    return;
+
+  }
+
+
+  let posts = [];
+
+
+  try{
+
+    posts =
+    JSON.parse(
+      localStorage.getItem(
+        "creatorPosts"
+      ) || "[]"
+    );
+
+  }
+  catch(error){
+
+    posts = [];
+
+  }
+
+
+  posts.push({
+
+    content:content,
+
+    platform:
+    platformInput.value,
+
+    contentType:
+    contentTypeInput.value,
+
+    tone:
+    toneInput.value,
+
+    date:
+    new Date().toLocaleString()
+
+  });
+
+
+  localStorage.setItem(
+    "creatorPosts",
+    JSON.stringify(posts)
+  );
+
+
+  updatePostCount();
+
+
+  showToast(
+    "Draft saved successfully 💾"
+  );
+
+}
+
+
+/* =========================================================
+   SAVE BUTTON
+   ========================================================= */
+
+saveBtn.addEventListener(
+  "click",
+  savePost
+);
+
+
+/* =========================================================
+   UPDATE POST COUNT
+   ========================================================= */
+
+function updatePostCount(){
+
+  let posts = [];
+
+
+  try{
+
+    posts =
+    JSON.parse(
+      localStorage.getItem(
+        "creatorPosts"
+      ) || "[]"
+    );
+
+  }
+  catch(error){
+
+    posts = [];
+
+  }
+
+
+  postCount.textContent =
+  posts.length;
+
+}
+
+
+/* =========================================================
+   CREATOR PROFILE
+   ========================================================= */
+
+function unlockProfileForm(){
+
+  phoneVerifyCard.style.display = "none";
+
+  profileDetailsCard.style.display = "block";
+
+}
+
+
+function loadProfile(){
+
+  let saved = null;
+
+  try{
+
+    saved =
+    JSON.parse(
+      localStorage.getItem(
+        "creatorProfile"
+      ) || "null"
+    );
+
+  }
+  catch(error){
+
+    saved = null;
+
+  }
+
+
+  if(saved && saved.verified){
+
+    profileNameInput.value = saved.name || "";
+
+    profileNicheInput.value = saved.niche || "Lifestyle";
+
+    profileBioInput.value = saved.bio || "";
+
+    profilePhoneInput.value = saved.phone || "+91";
+
+    unlockProfileForm();
+
+  }
+
+}
+
+
+function saveProfile(){
+
+  const profile = {
+
+    name:
+    profileNameInput.value.trim(),
+
+    niche:
+    profileNicheInput.value,
+
+    bio:
+    profileBioInput.value.trim(),
+
+    phone:
+    profilePhoneInput.value.trim(),
+
+    verified:
+    true
+
+  };
+
+  localStorage.setItem(
+    "creatorProfile",
+    JSON.stringify(profile)
+  );
+
+  showToast(
+    "Profile saved 👤"
+  );
+
+}
+
+
+saveProfileBtn.addEventListener(
+  "click",
+  saveProfile
+);
+
+
+/* =========================================================
+   PHONE OTP VERIFICATION (Firebase)
+   ========================================================= */
+
+function setupRecaptcha(){
+
+  if(window.recaptchaVerifier){
+
+    return;
+
+  }
+
+  window.recaptchaVerifier =
+  new firebase.auth.RecaptchaVerifier(
+    "recaptcha-container",
+    {
+      size:"invisible"
+    },
+    auth
+  );
+
+}
+
+
+sendOtpBtn.addEventListener(
+  "click",
+  async function(){
+
+    const phone =
+    profilePhoneInput.value.trim();
+
+    if(!phone || phone.length < 10){
+
+      showToast(
+        "Please enter a valid phone number with country code."
+      );
+
+      return;
+
+    }
+
+    sendOtpBtn.disabled = true;
+
+    sendOtpBtn.textContent =
+    "⏳ Sending...";
+
+    try{
+
+      setupRecaptcha();
+
+      confirmationResult =
+      await auth.signInWithPhoneNumber(
+        phone,
+        window.recaptchaVerifier
+      );
+
+      otpField.style.display = "flex";
+
+      verifyOtpBtn.style.display = "inline-block";
+
+      showToast(
+        "OTP sent to " + phone
+      );
+
+    }
+    catch(error){
+
+      console.error(
+        "OTP send error:",
+        error
+      );
+
+      showToast(
+        "Could not send OTP: " + error.message
+      );
+
+    }
+    finally{
+
+      sendOtpBtn.disabled = false;
+
+      sendOtpBtn.textContent =
+      "📲 Send OTP";
+
+    }
+
+  }
+);
+
+
+verifyOtpBtn.addEventListener(
+  "click",
+  async function(){
+
+    const code =
+    otpCodeInput.value.trim();
+
+    if(!code){
+
+      showToast(
+        "Please enter the OTP you received."
+      );
+
+      return;
+
+    }
+
+    if(!confirmationResult){
+
+      showToast(
+        "Please send an OTP first."
+      );
+
+      return;
+
+    }
+
+    verifyOtpBtn.disabled = true;
+
+    verifyOtpBtn.textContent =
+    "⏳ Verifying...";
+
+    try{
+
+      await confirmationResult.confirm(code);
+
+      showToast(
+        "Phone verified ✅"
+      );
+
+      unlockProfileForm();
+
+    }
+    catch(error){
+
+      console.error(
+        "OTP verify error:",
+        error
+      );
+
+      showToast(
+        "Invalid OTP. Please try again."
+      );
+
+    }
+    finally{
+
+      verifyOtpBtn.disabled = false;
+
+      verifyOtpBtn.textContent =
+      "✅ Verify OTP";
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   SOCIAL CONNECT BUTTONS
+   ========================================================= */
+
+document
+.querySelectorAll(".connectBtn")
+.forEach(function(button){
+
+  button.addEventListener(
+    "click",
+    function(){
+
+      showToast(
+        "Social connection will be available in the next version."
+      );
+
+    }
+  );
+
+});
+
+
+/* =========================================================
+   WARM UP GOOGLE SCRIPT
+   ========================================================= */
+
+let scriptWarmedUp = false;
+
+function warmUpScript(){
+
+  /*
+    Fires a silent background request to
+    wake up the Google Apps Script before
+    the user actually clicks "Generate".
+    This avoids the slow first-request
+    "cold start" the user hits when they
+    submit a real topic.
+    We don't care about the response here
+    — errors are ignored on purpose.
+  */
+
+  if(scriptWarmedUp){
+
+    return;
+
+  }
+
+  scriptWarmedUp = true;
+
+  fetch(
+    GOOGLE_SCRIPT_URL,
+    {
+      method:"POST",
+
+      headers:{
+        "Content-Type":
+        "text/plain;charset=utf-8"
+      },
+
+      body:
+      JSON.stringify({
+        warmup:true
+      })
+    }
+  ).catch(function(){
+
+    /*
+      Ignore failures — this is just a
+      best-effort wake-up ping. If it
+      fails, the real request will still
+      run normally (just possibly slower
+      the first time).
+    */
+
+    scriptWarmedUp = false;
+
+  });
+
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+   ========================================================= */
+
+updatePostCount();
+
+loadProfile();
+
+showPage("dashboard");
+
+/*
+  Warm up the script right away so it's
+  ready by the time the user reaches the
+  Create page. Also re-arm on focus of the
+  topic field, in case the first ping was
+  too long ago (script went idle again).
+*/
+
+warmUpScript();
+
+if(topicInput){
+
+  topicInput.addEventListener(
+    "focus",
+    warmUpScript
+  );
+
+}
+
+
+/* =========================================================
+   KEYBOARD SHORTCUT
+   Ctrl/Cmd + Enter = Generate
+   ========================================================= */
+
+document.addEventListener(
+  "keydown",
+  function(event){
+
+    if(
+      (event.ctrlKey || event.metaKey) &&
+      event.key === "Enter"
+    ){
+
+      if(
+        document
+        .getElementById("create")
+        .classList
+        .contains("active")
+      ){
+
+        generateContent();
+
+      }
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
